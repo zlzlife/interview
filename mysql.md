@@ -162,14 +162,16 @@ Hash索引只能用于对等比较，例如=,<=>(相当于=)操作符，由于�
 - 脏读：一个事务访问到另一个事务读取未提交的数据
 
 | 会话1 | 会话2 |
-| -- | -- | -- |
+| -- | -- |
 | begin | begin |
-
+| - | update student set age = 10 where id = 1 |
+| select age from student where id = 1 | - |
+| commit | commit |
 
 - 幻读：一个事务读取2次得到的记录条数不一致
 
 | 会话1 | 会话2 |
-| -- | -- | -- |
+| -- | -- |
 | begin | begin |
 | select count(1) from student where id > 10 |  |
 | - | insert into student (id , age) values (2,10) |
@@ -177,10 +179,11 @@ Hash索引只能用于对等比较，例如=,<=>(相当于=)操作符，由于�
 | select count(1) from student where id > 10 | - |
 | commit | - |
 
+
 - 不可重复读：一个事务读取同一条记录2次，得到的结果不一致
 
 | 会话1 | 会话2 |
-| -- | -- | -- |
+| -- | -- |
 | begin | begin |
 | select age from student where id =1 | - |
 | - | update student age = 10 where id = 1 |
